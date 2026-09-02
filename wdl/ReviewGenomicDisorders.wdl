@@ -9,7 +9,6 @@ workflow ReviewGenomicDisorders {
     Float? min_rd_deviation
     Int? max_calls_per_sample
     File sample_table
-    File segdups
     File pedigree
     Array[String] sample_set_ids
     Array[File] bincov_matrices
@@ -34,7 +33,6 @@ workflow ReviewGenomicDisorders {
         medians_file = medians_files[i],
         gd_regions = gd_regions,
         sample_table = sample_table,
-        segdups = segdups,
         pedigree = pedigree,
         min_rd_deviation = min_rd_deviation,
         padding = padding,
@@ -61,7 +59,6 @@ task VisualizeGenomicDisorders {
     File medians_file
     File gd_regions
     File pedigree
-    File segdups
     Float? min_rd_deviation
     Float? padding
     Float? max_calls_per_sample
@@ -76,7 +73,6 @@ task VisualizeGenomicDisorders {
     medians_file: "Genome-wide median coverage file."
     gd_regions: "Genomic disorder regions coordinates file."
     pedigree: "Pedigree."
-    segdups: "Segmental duplication coordinates file."
     min_rd_deviation: "Minimum read depth ratio deviation from 1 required to make a plot."
     padding: "Fraction of GD region to add as padding."
     max_calls_per_sample: "Maximum number of call-regions per sample."
@@ -88,7 +84,7 @@ task VisualizeGenomicDisorders {
     File excess_call_samples = "excess_calls_samples_${batch_id}.tsv"
   }
 
-  Float input_size = size([bincov, medians_file, gd_regions, segdups, pedigree], "GB")
+  Float input_size = size([bincov, medians_file, gd_regions, pedigree], "GB")
   Int disk_size = ceil(input_size) + 50
   runtime {
     bootDiskSizeGb: 8
@@ -111,7 +107,6 @@ task VisualizeGenomicDisorders {
     medians_file='~{medians_file}'
     gd_regions='~{gd_regions}'
     pedigree='~{pedigree}'
-    segdups='~{segdups}'
     min_rd_deviation='~{if defined(min_rd_deviation) then "--min-shift ${min_rd_deviation}" else ""}'
     padding='~{if defined(padding) then "--pad ${padding}" else ""}'
     max_calls_per_sample='~{if defined(max_calls_per_sample) then "--max-calls-per-sample ${max_calls_per_sample}" else ""}'
@@ -125,7 +120,6 @@ task VisualizeGenomicDisorders {
       ${max_calls_per_sample} \
       --outliers "excess_calls_samples_${batch_id}.tsv" \
       "${gd_regions}" \
-      "${segdups}" \
       "${bincov}" \
       "${medians_file}" \
       samples.list \
