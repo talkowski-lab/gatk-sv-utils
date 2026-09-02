@@ -1,10 +1,9 @@
 # Call Genomic Disorder CNVs
 #
 # Usage:
-# Rscript call_gds.R [options] <gd_regions> <sd_regions> <bincov> <medians> \
+# Rscript call_gds.R [options] <gd_regions> <bincov> <medians> \
 #   <samples> <sex_ploidy> <outdir>
 # gd_regions      genomic disorder regions to visualize
-# sd_regions      segmental duplications
 # bincov          binned coverage matrix
 # medians         coverage medians
 # samples         list of samples to check for CNVs
@@ -37,7 +36,7 @@ validate_args <- function(x) {
 
 parse_args <- function() {
     args <- commandArgs(trailingOnly = TRUE)
-    pos_args <- vector("list", 7)
+    pos_args <- vector("list", 6)
     opts <- list(min_shift = 0.3, pad = 0.5,
                  max_calls_per_sample = 3, outliers = NULL)
     i <- 1
@@ -70,7 +69,7 @@ parse_args <- function() {
     if (any(sapply(pos_args, is.null))) {
         stop("incorrect number of arguments", call. = FALSE)
     }
-    names(pos_args) <- c("gd_regions", "sd_regions", "bincov", "medians",
+    names(pos_args) <- c("gd_regions", "bincov", "medians",
                          "samples", "sex_ploidy", "outdir")
 
     validate_args(append(pos_args, opts))
@@ -82,4 +81,4 @@ argv <- parse_args()
 
 suppressPackageStartupMessages(library(gorilla))
 
-forage(argv$gd_regions, argv$sd_regions, argv$bincov, argv$medians, argv$samples, argv$sex_ploidy, argv$outdir, argv$min_shift, argv$pad, argv$max_calls_per_sample, argv$outliers)
+forage(argv$gd_regions, argv$bincov, argv$medians, argv$samples, argv$sex_ploidy, argv$outdir, argv$min_shift, argv$pad, argv$max_calls_per_sample, argv$outliers)
